@@ -1,0 +1,93 @@
+apply plugin: 'com.android.library'
+
+// Manifest version information
+def versionMajor = 0
+def versionMinor = 0
+def versionPatch = 1
+
+/**
+ * jcenter configuration
+ */
+ext {
+
+    //For bintray and jcenter distribution 
+    bintrayRepo = 'maven'
+    bintrayName = 'sample-library'
+
+    publishedGroupId = 'com.quangnguyen.sample'
+    libraryName = 'SampleLibrary'
+    artifact = 'sample-library' //This artifact name should be the same with library module name
+
+    libraryDescription = 'Simple, clean and short description'
+
+    siteUrl = 'https://github.com/quangctkm9207/sample-library'
+    gitUrl = 'https://github.com/quangctkm9207/sample-library.git'
+
+    libraryVersion = "${versionMajor}.${versionMinor}.${versionPatch}"
+
+    developerId = 'quangctkm9207'
+    developerName = 'Quang Nguyen'
+    developerEmail = 'quangn.bme.hust.55@gmail.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'  //Example for license
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+
+    //Project variable definition
+    MIN_SDK = 14
+    TARGET_SDK = 25
+    BUILD_TOOLS = "25.0.2"
+    GOOGLE_LIBS = "25.1.0"
+    VERSION_CODE = versionMajor * 10000 + versionMinor * 100 + versionPatch
+    VERSION_NAME = "${versionMajor}.${versionMinor}.${versionPatch}"
+
+}
+
+buildscript {
+    repositories {
+        //....
+    }
+
+    dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.4'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.4.1'
+
+        //Others
+        //.....
+    }
+}
+
+/**
+ * Project configuration
+ */
+
+android {
+    compileSdkVersion TARGET_SDK
+    buildToolsVersion BUILD_TOOLS
+
+    defaultConfig {
+        minSdkVersion MIN_SDK
+        targetSdkVersion TARGET_SDK
+        versionCode VERSION_CODE
+        versionName VERSION_NAME
+
+    }
+    buildTypes {
+        debug{
+        }
+        release {
+            minifyEnabled true
+            debuggable false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    //......
+}
+
+//use gradle distribution configuration file on remote Github repository
+apply from: 'https://raw.githubusercontent.com/quangctkm9207/template-files/master/android/gradle/install.gradle'
+apply from: 'https://raw.githubusercontent.com/quangctkm9207/template-files/master/android/gradle/bintray.gradle'

@@ -1,0 +1,44 @@
+apply plugin: 'com.android.application'
+
+//Version information
+def versionMajor = 1
+def versionMinor = 0
+def versionPatch = 0
+
+ext{
+    MIN_SDK = 14
+    TARGET_SDK = 25
+    BUILD_TOOLS = "25.0.2"
+    GOOGLE_LIBS = "25.1.0"
+    VERSION_CODE = versionMajor * 10000 + versionMinor * 100 + versionPatch
+    VERSION_NAME = "${versionMajor}.${versionMinor}.${versionPatch}"
+}
+
+android {
+    compileSdkVersion TARGET_SDK
+    buildToolsVersion BUILD_TOOLS
+
+    defaultConfig {
+        applicationId "com.quangnguyen.sample-app"
+        minSdkVersion MIN_SDK
+        targetSdkVersion TARGET_SDK
+        versionCode VERSION_CODE
+        versionName VERSION_NAME
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile 'junit:junit:4.12'
+    compile "com.android.support:appcompat-v7:$GOOGLE_LIBS"
+    compile "com.android.support:support-v4:$GOOGLE_LIBS"
+
+    //Other dependences
+    //.....
+}
