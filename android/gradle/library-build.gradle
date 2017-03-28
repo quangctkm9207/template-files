@@ -17,7 +17,7 @@ buildscript {
 }
 
 /**
- * jcenter configuration
+ * bintray configuration
  */
 ext {
 
