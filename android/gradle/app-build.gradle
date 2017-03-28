@@ -1,41 +1,109 @@
 apply plugin: 'com.android.application'
+apply plugin: 'android-apt'
 
-//Version information
-def versionMajor = 1
-def versionMinor = 0
-def versionPatch = 0
-
-ext{
-    MIN_SDK = 14
-    TARGET_SDK = 25
-    BUILD_TOOLS = "25.0.2"
-    GOOGLE_LIBS = "25.1.0"
-    VERSION_CODE = versionMajor * 10000 + versionMinor * 100 + versionPatch
-    VERSION_NAME = "${versionMajor}.${versionMinor}.${versionPatch}"
+// Specifies the repositories only used in this module
+repositories{
+    maven {
+        // Sample for repositories which is not distributed publicly on jcenter, only via bintray
+        // its url needs to be defined explicitly
+        url  "http://dl.bintray.com/username/maven"  
+    }
 }
 
+//Version information
+def versionMajor = 0
+def versionMinor = 0
+def versionPatch = 1
+
+// Signing properties
+// Saves sensitive passwords in local.properties file which will not be uploaded to remote repository
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+def keyAliasValue = properties.getProperty("keyAlias")
+def keyPasswordValue = properties.getProperty("keyPassword")
+def storePasswordValue = properties.getProperty("storePassword")
+def storeFilePath = rootProject.file('appname-keystore.jks')
+
 android {
-    compileSdkVersion TARGET_SDK
-    buildToolsVersion BUILD_TOOLS
+    compileSdkVersion rootProject.ext.targetSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
-        applicationId "com.quangnguyen.sample-app"
-        minSdkVersion MIN_SDK
-        targetSdkVersion TARGET_SDK
-        versionCode VERSION_CODE
-        versionName VERSION_NAME
+        applicationId "com.quangnguyen.appname"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode versionMajor * 10000 + versionMinor * 100 + versionPatch
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
+
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
-    buildTypes {
+
+    signingConfigs {
         release {
+            keyAlias keyAliasValue
+            keyPassword keyPasswordValue
+            storeFile storeFilePath
+            storePassword storePasswordValue
+            v2SigningEnabled false
+        }
+    }
+
+    buildTypes {
+        debug {
             minifyEnabled false
+            applicationIdSuffix '.debug'
+            versionNameSuffix '-DEBUG'
+        }
+        release {
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            signingConfig signingConfigs.release
+        }
+    }
+
+    // Always show the result of every unit test, even if it passes.
+    testOptions.unitTests.all {
+        testLogging {
+            events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
         }
     }
 }
 
 dependencies {
-    compile "com.android.support:appcompat-v7:$GOOGLE_LIBS"
+    // Support libraries
+    compile "com.android.support:appcompat-v7:$rootProject.ext.supportLibraryVersion"
+    compile "com.android.support:support-v4:$rootProject.ext.supportLibraryVersion"
+    compile "com.android.support:recyclerview-v7:$rootProject.ext.supportLibraryVersion"
+    compile "com.android.support.test.espresso:espresso-idling-resource:$rootProject.espressoVersion"
 
-    //Other dependences
-    //.....
+    // Other third-party libraries
+    // .....
+
+    // Local Unit Test libraries
+    testCompile "junit:junit:$rootProject.ext.junitVersion"
+    testCompile "org.mockito:mockito-all:$rootProject.ext.mockitoVersion"
+    testCompile "org.hamcrest:hamcrest-all:$rootProject.ext.hamcrestVersion"
+
+    // Android Testing Support Library's runner and rules
+    androidTestCompile "com.android.support.test:runner:$rootProject.ext.runnerVersion"
+    androidTestCompile "com.android.support.test:rules:$rootProject.ext.runnerVersion"
+
+    // Android Unit Test libraries
+    androidTestCompile "junit:junit:$rootProject.ext.junitVersion"
+    androidTestCompile "org.mockito:mockito-core:$rootProject.ext.mockitoVersion"
+    androidTestCompile 'com.google.dexmaker:dexmaker:1.2'
+    androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2'
+
+    // Espresso UI Testing
+    androidTestCompile "com.android.support.test.espresso:espresso-core:$rootProject.espressoVersion"
+    androidTestCompile "com.android.support.test.espresso:espresso-contrib:$rootProject.espressoVersion"
+    androidTestCompile "com.android.support.test.espresso:espresso-intents:$rootProject.espressoVersion"
+
+    // Resolve conflicts between main and test APK:
+    androidTestCompile "com.android.support:support-annotations:$rootProject.supportLibraryVersion"
+    androidTestCompile "com.android.support:support-v4:$rootProject.supportLibraryVersion"
+    androidTestCompile "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
+    androidTestCompile "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
+    androidTestCompile "com.android.support:design:$rootProject.supportLibraryVersion"
 }
