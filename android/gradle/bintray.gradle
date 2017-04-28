@@ -50,6 +50,7 @@ bintray {
         repo = bintrayRepo
         name = bintrayName
         desc = libraryDescription
+        userOrg = organization   // If the repository is hosted by an organization instead of personal account.
         websiteUrl = siteUrl
         vcsUrl = gitUrl
         licenses = allLicenses
